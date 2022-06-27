@@ -1,23 +1,35 @@
+import { Button, Radio } from "antd";
+import { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import { getAllStudents } from './client';
+
+
+
 function App() {
+  const [students, setStudents] = useState([]);
+
+  const fetchStudents = () => getAllStudents().then(res => res.json())
+  .then(data => setStudents(data));
+
+  /**
+   * Empty Array on second args mean zero dependencies
+   */
+  useEffect(() => {
+    console.log("Component is mounted")
+    fetchStudents();
+  }, []);
+
+  if(students.length <= 0){
+    return "no data";
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     {students.map((student, index) => {
+      return <p key={index}>{student.id} {student.name}</p>
+     })}
     </div>
   );
 }
