@@ -1,4 +1,0 @@
-# Maven command
-
-On root directory run
-./mvnw clean install
