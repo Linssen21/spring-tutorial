@@ -33,4 +33,4 @@ build/
 .vscode/
 
 /notes
-package-lock.json
+/src/frontend/package-lock.json
