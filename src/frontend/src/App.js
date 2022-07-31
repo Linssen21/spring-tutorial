@@ -1,4 +1,16 @@
-import { Layout, Menu, Breadcrumb, Table, Spin, Empty, Button } from 'antd';
+import {
+    Layout,
+    Menu,
+    Breadcrumb,
+    Table,
+    Spin,
+    Empty,
+    Button,
+    Badge,
+    Tag,
+    Row,
+    Avatar,
+} from 'antd';
 import {
     FileOutlined,
     PieChartOutlined,
@@ -16,7 +28,30 @@ import { getAllStudents } from './client';
 
 const { Content, Footer, Header, Sider } = Layout;
 
+const TheAvatar = ({ name }) => {
+    let trim = name.trim();
+    // Default if no name
+    if (trim.length === 0) {
+        return <Avatar icon={<UserOutlined />} />;
+    }
+
+    const split = trim.split(' ');
+    if (split.length === 1) {
+        return <Avatar>{name.charAt(0)}</Avatar>;
+    }
+
+    return (
+        <Avatar>{`${name.charAt(0)}${name.charAt(name.length - 1)}`}</Avatar>
+    );
+};
+
 const columns = [
+    {
+        title: '',
+        dataIndex: 'avatar',
+        key: 'avatar',
+        render: (text, student) => <TheAvatar name={student.name} />,
+    },
     {
         title: 'Id',
         dataIndex: 'id',
@@ -110,14 +145,29 @@ function App() {
                     columns={columns}
                     bordered
                     title={() => (
-                        <Button
-                            onClick={() => setShowDrawer(!showDrawer)}
-                            type="primary"
-                            shape="round"
-                            icon={<PlusOutlined />}
-                            size="medium">
-                            Add New Student
-                        </Button>
+                        <>
+                            <Row
+                                style={{
+                                    marginTop: '1rem',
+                                    marginBottom: '1rem',
+                                }}>
+                                <Tag style={{ marginLeft: '10px' }}>
+                                    Number of students
+                                </Tag>
+                                <Badge
+                                    className="site-badge-count-4"
+                                    count={students.length}
+                                />
+                            </Row>
+                            <Button
+                                onClick={() => setShowDrawer(!showDrawer)}
+                                type="primary"
+                                shape="round"
+                                icon={<PlusOutlined />}
+                                size="medium">
+                                Add New Student
+                            </Button>
+                        </>
                     )}
                 />
             </>
