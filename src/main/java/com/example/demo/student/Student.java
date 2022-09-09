@@ -1,5 +1,6 @@
 package com.example.demo.student;
 
+import com.example.demo.util.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,7 +22,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table
-public class Student {
+public class Student extends BaseEntity{
     @Id
     @SequenceGenerator(name = "student_sequence", sequenceName = "student_sequence", allocationSize = 1)
     @GeneratedValue(generator = "student_sequence",
@@ -32,11 +33,11 @@ public class Student {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    public Student(String name, String email, Gender gender) {
-        this.name = name;
-        this.email = email;
-        this.gender = gender;
-    }
+//    public Student(String name, String email, Gender gender) {
+//        this.name = name;
+//        this.email = email;
+//        this.gender = gender;
+//    }
 
     // Use Constructor, getter and setter to Student Model without lombok
 
