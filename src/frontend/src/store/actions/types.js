@@ -1,0 +1,8 @@
+const STUDENTS = {
+    FETCH: 'STUDENTS_FETCH',
+    ADD: 'STUDENTS_ADD',
+    DELETE: 'STUDENTS_DELETE',
+    ERROR: 'STUDENTS_ERROR',
+};
+
+export { STUDENTS };
