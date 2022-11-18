@@ -4,6 +4,8 @@ import com.example.demo.util.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 /**
  * Use lombok annotations to create constructors, getter, setter
@@ -28,8 +30,11 @@ public class Student extends BaseEntity{
     @GeneratedValue(generator = "student_sequence",
             strategy = GenerationType.SEQUENCE)
     private Long id;
+    @NotNull
     private String name;
+    @Email
     private String email;
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

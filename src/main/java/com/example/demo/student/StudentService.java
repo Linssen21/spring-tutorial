@@ -21,6 +21,10 @@ import static com.example.demo.util.BaseEntity.SORT_BY_CREATED_AT_DESC;
 public class StudentService {
     private final StudentRepository studentRepository;
 
+//    @AllArgsConstructor - Generates this code for dependency injection
+//    public StudentService(StudentRepository studentRepository) {
+//        this.studentRepository = studentRepository;
+//    }
     public List<Student> getAllStudents(){
         return studentRepository.findAll(SORT_BY_CREATED_AT_DESC);
     }
@@ -50,8 +54,5 @@ public class StudentService {
         return true;
     }
 
-//    @AllArgsConstructor - Generates this code
-//    public StudentService(StudentRepository studentRepository) {
-//        this.studentRepository = studentRepository;
-//    }
+
 }
