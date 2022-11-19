@@ -14,12 +14,15 @@ import javax.validation.constraints.NotNull;
  * Student Model
  * GenerationType.SEQUENCE - is not supported by MySQL by default uses GenerationType.TABLE which is very slow
  *
- * Lombok @Data Annotation will make the Clas immutable
+ * Lombok @Data Annotation will make the Class immutable
+ *
+ * Notes on using lombok on Entity Objects
+ * reference link: https://www.jpa-buddy.com/blog/lombok-and-jpa-what-may-go-wrong/
  */
 @ToString
 @Getter
 @Setter
-@EqualsAndHashCode
+//@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

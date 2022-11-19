@@ -4,11 +4,16 @@ import com.example.demo.student.exception.BadRequestException;
 import com.example.demo.student.exception.StudentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ErrorControllerAdvice {
@@ -18,7 +23,7 @@ public class ErrorControllerAdvice {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         // Converting the stack trace to String
         String stackTrace = this.convertStackTraceToString(e);
-        return buildResponseEntity(status, e, stackTrace);
+        return buildResponseEntity(status, e.getMessage(), stackTrace);
     }
     // Custom Exception for Students
     @ExceptionHandler(StudentNotFoundException.class)
@@ -26,7 +31,28 @@ public class ErrorControllerAdvice {
         HttpStatus status = HttpStatus.NOT_FOUND;
         // Converting the stack trace to String
         String stackTrace = this.convertStackTraceToString(e);
-        return buildResponseEntity(status, e, stackTrace);
+        return buildResponseEntity(status, e.getMessage(), stackTrace);
+    }
+
+    /**
+     *
+     * @param e
+     * @return ResponseEntity
+     * Custom Exception handling for Spring boot Validation added on the Entity with @NotNull, @Email annotations
+     * and @Valid on the Controllers request params
+     * Convert the Default Exception message to custom by getting the Field errors from the Binding Result
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        BindingResult result = e.getBindingResult();
+        List<FieldError> fieldErrors = result.getFieldErrors();
+        List<String> customFieldErrors = fieldErrors.stream().map(fieldError ->
+            "Validation Error: " + fieldError.getRejectedValue() + ' ' + fieldError.getDefaultMessage()).toList();
+
+        String stackTrace = this.convertStackTraceToString(e);
+        return buildResponseEntity(status, customFieldErrors.toString(), stackTrace);
     }
 
     /**
@@ -39,7 +65,7 @@ public class ErrorControllerAdvice {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR; // 500
         // Converting the stack trace to String
         String stackTrace = this.convertStackTraceToString(e);
-        return buildResponseEntity(status, e, stackTrace);
+        return buildResponseEntity(status, e.getMessage(), stackTrace);
     }
 
     /**
@@ -56,13 +82,13 @@ public class ErrorControllerAdvice {
     /**
      *
      * @param status
-     * @param e
+     * @param message
      * @param stackTrace
      * @return Response Entity with error message
      */
-    protected ResponseEntity<ErrorResponse> buildResponseEntity(HttpStatus status, Exception e, String stackTrace){
+    protected ResponseEntity<ErrorResponse> buildResponseEntity(HttpStatus status, String message, String stackTrace){
         return new ResponseEntity<>(
-                new ErrorResponse(status, e.getMessage(), stackTrace),
+                new ErrorResponse(status, message, stackTrace),
                 status
         );
     }
