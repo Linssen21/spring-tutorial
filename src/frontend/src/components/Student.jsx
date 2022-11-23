@@ -24,8 +24,8 @@ import StudentDrawerForm from './StudentDrawerForm';
 import { useState, useEffect } from 'react';
 import { useStudentContext } from '../store/provider/StudentDataProvider';
 import '../App.css';
-
 import Actions from './Actions';
+import { usePrevious } from '../hooks';
 
 const { Content, Footer, Header, Sider } = Layout;
 
@@ -118,6 +118,7 @@ function Student() {
 
     const handleFetchStudents = () => {
         fetchStudents();
+        console.log(studentsData);
         setFetching(false);
     };
 
@@ -128,18 +129,14 @@ function Student() {
         handleFetchStudents();
     }, []);
 
-    // useEffect(() => {
-    //     Notification('error', 'Error Message', errorData.message);
-    // }, [errorData]);
-
     const renderStudents = () => {
         if (fetching) {
             return <Spin indicator={loaderIcon} />;
         }
 
-        if (studentsData <= 0) {
-            return <Empty />;
-        }
+        // if (studentsData <= 0) {
+        //     return <Empty />;
+        // }
 
         return (
             <>
