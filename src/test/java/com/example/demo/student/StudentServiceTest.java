@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.example.demo.util.BaseEntity.SORT_BY_CREATED_AT_DESC;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
     /**
      * Instead of using Autowired Annotation we will be using @Mock
@@ -19,13 +20,13 @@ class StudentServiceTest {
      */
     @Mock
     private StudentRepository studentRepository;
-    private AutoCloseable autoCloseable;
+//    private AutoCloseable autoCloseable;
     private StudentService underTest;
 
     // Runs before Each test
     @BeforeEach
     void setUp() {
-        autoCloseable = MockitoAnnotations.openMocks(this);
+//        autoCloseable = MockitoAnnotations.openMocks(this);
         underTest = new StudentService(studentRepository);
     }
 
@@ -33,10 +34,10 @@ class StudentServiceTest {
      * Close the Resource after each Test
      * @throws Exception
      */
-    @AfterEach
-    void tearDown() throws Exception {
-        autoCloseable.close();
-    }
+//    @AfterEach
+//    void tearDown() throws Exception {
+//        autoCloseable.close();
+//    }
 
     @Test
     void getAllStudents() {
