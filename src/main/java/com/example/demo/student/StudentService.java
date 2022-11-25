@@ -50,9 +50,5 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
-    Boolean selectExistsEmail(String email){
-        return true;
-    }
-
 
 }
