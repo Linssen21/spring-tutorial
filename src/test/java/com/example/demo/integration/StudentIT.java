@@ -3,6 +3,7 @@ package com.example.demo.integration;
 import com.example.demo.student.Gender;
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
@@ -12,13 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -68,5 +71,45 @@ public class StudentIT {
         // Ignores id for finding Student on the list (does not work)
         // assertThat(students).usingRecursiveFieldByFieldElementComparatorIgnoringFields("id").contains(student);
         assertThat(students).contains(student);
+    }
+
+    @Test
+    void canDeleteStudent() throws Exception{
+        //given
+        String name =  String.format("%s %s", faker.name().firstName(), faker.name().lastName());
+        String email = StringUtils.trimAllWhitespace(String.format("%s@gmail.com", name.toLowerCase()));
+        Student student = new Student(name, email, Gender.MALE);
+
+        // Add new student
+        mockMvc
+                .perform(post("/api/v1/students").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(student)));
+        // Fetch/Get all students
+        MvcResult getStudentResult = mockMvc.perform(get("/api/v1/students").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+        // Convert Response to String
+        String contentString = getStudentResult.getResponse().getContentAsString();
+        // Convert Response String to Object by using ObjectMapper
+        List<Student> students = objectMapper.readValue(contentString, new TypeReference<List<Student>>() {
+        });
+
+        /**
+         * Fetch student id by using stream function
+         * Filter all students from the list by the Added email
+         * Map the filtered student and only returns the ID field
+         * Return first result
+         */
+        long id = students
+                .stream()
+                .filter(studentPredicate -> studentPredicate.getEmail().equals(student.getEmail()))
+                .map(Student::getId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("student with email: " + email + " not found"));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/students/{id}", id));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        boolean exists = studentRepository.existsById(id);
+        assertThat(exists).isFalse();
     }
 }
